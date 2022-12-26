@@ -1,4 +1,4 @@
-package GraphTheory;
+package BackJoon.GraphTheory;
 
 import java.io.BufferedReader;
 import java.io.IOException;

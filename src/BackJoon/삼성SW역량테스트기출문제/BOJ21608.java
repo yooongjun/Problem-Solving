@@ -1,4 +1,4 @@
-package 삼성SW역량테스트기출문제;
+package BackJoon.삼성SW역량테스트기출문제;
 
 import java.io.BufferedReader;
 import java.io.IOException;
