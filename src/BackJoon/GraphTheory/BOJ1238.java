@@ -2,23 +2,30 @@ package BackJoon.GraphTheory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.StringTokenizer;
+import java.util.*;
 
 // 파티
 public class BOJ1238 {
+
+    // X에서 다른 노드로의 최단 거리
+    static int minDistanceX[];
+
+    static int N;
+    static int M;
+    static int X;
+
+    static List<Edge>[] town;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        int N = Integer.parseInt(st.nextToken());
-        int M = Integer.parseInt(st.nextToken());
-        int X = Integer.parseInt(st.nextToken());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        X = Integer.parseInt(st.nextToken());
 
-        List<Edge>[] town = new ArrayList[N + 1];
+        minDistanceX = new int[N + 1];
+        town = new ArrayList[N + 1];
 
         for (int i = 1; i < N + 1; i++) {
             town[i] = new ArrayList<>();
@@ -30,112 +37,79 @@ public class BOJ1238 {
             town[Integer.parseInt(st.nextToken())].add(new Edge(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken())));
         }
 
-        int maxTime = 0;
-        // x에서 각 마을까지의 시간
-        PriorityQueue<Edge> pq = new PriorityQueue<>();
-        boolean[] temp = new boolean[N + 1];
-        int [] timeFromX = new int[N+1];
+        int result = 0;
 
-        temp[X] = true;
+        Dijkstra(X, 0);
 
-        for (int i = 0; i < town[X].size(); i++) {
-            town[X].get(i).distance = town[X].get(i).t;
-            pq.add(town[X].get(i));
-        }
-
-        while (!pq.isEmpty()) {
-            Edge poll = pq.poll();
-
-            if (temp[poll.node])
-                continue;
-
-            temp[poll.node] = true;
-            timeFromX[poll.node] = poll.distance;
-
-             for (int i = 0; i < town[poll.node].size(); i++) {
-                Edge edge = town[poll.node].get(i);
-
-                edge.distance = 0;
-
-                if (temp[edge.node]) {
-                    continue;
-                }
-
-                edge.distance = poll.distance + edge.t;
-                pq.add(edge);
-            }
-        }
-
-        // 각 노드에서 X 마을까지의 시간 구하기
         for (int i = 1; i < N + 1; i++) {
-
-            if (i == X)
-                continue;
-
-            boolean visited[] = new boolean[N + 1];
-            PriorityQueue<Edge> queue = new PriorityQueue<>();
-            visited[i] = true;
-
-            // 시작 노드를 큐에 추가함
-            for (int j = 0; j < town[i].size(); j++) {
-                Edge edge = town[i].get(j);
-                edge.distance = edge.t;
-                queue.add(edge);
-            }
-
-            while (!queue.isEmpty()) {
-                Edge cur = queue.poll();
-
-                if (visited[cur.node])
-                        continue;
-                visited[cur.node] = true;
-
-                if (cur.node == X) {
-                    maxTime = Math.max(timeFromX[i] + cur.distance, maxTime);
-                    break;
-                }
-
-                for (int j = 0; j < town[cur.node].size(); j++) {
-                    Edge edge = town[cur.node].get(j);
-
-                    edge.distance = 0;
-
-                    if (visited[edge.node])
-                        continue;
-
-                    edge.distance = cur.distance + edge.t;
-                    pq.add(edge);
-                }
-            }
+            if (i != X)
+                result = Math.max(Dijkstra(i, X) + minDistanceX[i], result);
         }
 
-
-        System.out.println(maxTime);
+        System.out.println(result);
     }
+
+    public static int Dijkstra(int start, int destination) {
+        int visited[] = new int[N + 1];
+        PriorityQueue<Edge> queue = new PriorityQueue<>();
+
+        // 시작 노드에 존재하는 Edge들을 queue에 넣음
+        for (int i = 0; i < town[start].size(); i++) {
+            Edge cur = town[start].get(i);
+            cur.accumulateTime = cur.time;
+            queue.add(cur);
+        }
+
+        while (!queue.isEmpty()) {
+            Edge cur = queue.poll();
+
+            if (visited[cur.node] != 0)
+                continue;
+
+            visited[cur.node] = cur.accumulateTime;
+
+            if (cur.node == destination && start != X) {
+                cur.accumulateTime = 0;
+                break;
+            }
+
+            for (int i = 0; i < town[cur.node].size(); i++) {
+                Edge next = town[cur.node].get(i);
+
+                if (visited[next.node] == 0 && next.node != start) {
+                    next.accumulateTime = next.time + cur.accumulateTime;
+                    queue.add(next);
+                }
+            }
+
+        }
+
+        if (start == X) {
+            minDistanceX = visited;
+        }
+
+        return visited[destination];
+    }
+
 
 
     static class Edge implements Comparable<Edge>{
 
         int node;
 
-        int t;
-        
-        // 누적 시간
-        int distance= 0;
+        int time;
 
-        public Edge(int node, int t){
+        int accumulateTime = 0;
+
+        public Edge(int node, int time){
             this.node = node;
-            this.t = t;
+            this.time = time;
         }
 
         @Override
         public int compareTo(Edge o) {
-            return this.distance - o.distance;
+            return this.accumulateTime - o.accumulateTime;
         }
     }
-
-
-
-
 
 }
