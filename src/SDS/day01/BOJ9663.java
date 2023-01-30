@@ -1,4 +1,4 @@
-package BackJoon.Bruteforcing;
+package SDS.day01;
 
 import java.util.Scanner;
 
