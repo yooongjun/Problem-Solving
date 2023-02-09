@@ -8,30 +8,54 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 도로 네트워크
+ * N개의 도시 , N-1 개의 도로 , 모두 연결
+ * --> 트리 자료구조임을 알 수 있다.
+ * 한 노드에서 다른 노드로의 경로는 반드시 그 둘의 LCA를 거침.
+ * 따라서 A ~ LCA(A,B) , B ~ LCA(A,B)사이에 존재하는 min, max 값을 찾는 방식
+ */
 public class BOJ3176 {
 
-    static int parent[][] = new int[18][100001];
+    static int parent[][];
     static int n;
-    static List<Info> map[] = new ArrayList[100001];
+    static List<Info> map[];
 
     static int minResult;
     static int maxResult;
 
     // 길이 저장하는 배열
-    static int min[][] = new int[18][100001];
-    static int max[][] = new int[18][100001];
+    static int min[][];
+    static int max[][];
 
     // dfs
-    static boolean visit[] = new boolean[100001];
-    static int depth[] = new int[100001];
+    static boolean visit[];
+    static int depth[];
+
+    static int LogN = 0;
 
     public static void main(String[] args) throws IOException{
+
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
         n = Integer.parseInt(br.readLine());
 
-        for(int i = 1; i <= 100000; i++)
+        int t = 1;
+        while(t < n) {
+            LogN ++;
+            t  *= 2;
+        }
+
+        // 초기화
+        parent = new int[LogN + 1][n+1];
+        map = new ArrayList[n+1];
+        min = new int[LogN+1][n+1];
+        max = new int[LogN+1][n+1];
+        visit = new boolean[n+1];
+        depth = new int[n+1];
+
+        for(int i = 1; i <= n; i++)
             map[i] = new ArrayList<>();
 
         for(int i = 1; i < n; i++) {
@@ -45,62 +69,33 @@ public class BOJ3176 {
             map[b].add(new Info(a,c));
         }
 
-        // 미리 배열 초기화
-        for(int i = 0; i < 18; i++)
-        {
-            for(int j = 1; j < 100001; j++) {
-                min[i][j] = 100001;
-            }
-
-        }
-
-
         // 1번 도시를 root 로 가정
         dfs(1, 0);
+
         // sparse table 생성
         makeSparse();
 
         int k = Integer.parseInt(br.readLine());
         for(int i = 1; i <= k ; i++)
         {
-            int lca, diff_d, diff_e, minValue, maxValue;
             String s[] = br.readLine().split(" ");
             int d, e;
             d = Integer.parseInt(s[0]);
             e = Integer.parseInt(s[1]);
 
-            lca = LCA(d,e);
+            LCA(d,e);
 
-            diff_d = depth[d] - depth[lca] - 1;
-            diff_e = depth[e] - depth[lca] - 1;
-
-            if(diff_d < 0)
-            {
-                minValue = min[diff_e][e];
-                maxValue = max[diff_e][e];
-            }
-            else if(diff_e < 0)
-            {
-                minValue = min[diff_d][d];
-                maxValue = max[diff_d][d];
-            }
-            else {
-                minValue = Math.min( min[diff_d][d],  min[diff_e][e] );
-                maxValue = Math.max( max[diff_d][d], max[diff_e][e] );
-            }
-
-            bw.append(minValue + " "  + maxValue + "\n");
+            bw.append(minResult + " "  + maxResult + "\n");
         }
 
         bw.flush();
     }
 
-
+    // 희소 행렬 생성
     static void makeSparse(){
-        for(int i = 1; i < 18; i++) {
-            for(int j = 1; j < 100001; j++) {
+        for(int i = 1; i < LogN + 1; i++) {
+            for(int j = 1; j < n + 1; j++) {
                 parent[i][j] = parent[i-1][parent[i-1][j]];
-
                 min[i][j] = Math.min(min[i-1][j], min[i - 1][parent[i-1][j]]);
                 max[i][j] = Math.max(max[i-1][j], max[i - 1][parent[i-1][j]]);
             }
@@ -113,9 +108,6 @@ public class BOJ3176 {
         // 방문 순서 저장
         depth[now] = depthParam;
         visit[now] = true;
-
-        if(depthParam == n -1)
-            return;
 
         for(Info i: map[now]) {
 
@@ -133,13 +125,12 @@ public class BOJ3176 {
         }
     }
 
-
-
-
-
     // a와 b의 LCA 구하기
     static int LCA(int a, int b)
     {
+
+        minResult = Integer.MAX_VALUE;
+        maxResult = 0;
 
         if(depth[a] != depth[b])
         {
@@ -152,6 +143,8 @@ public class BOJ3176 {
             for(int i = 0; diff > 0; i++) {
 
                 if( (diff & 1) == 1) {
+                    minResult = Math.min( minResult, min[i][a]);
+                    maxResult = Math.max( maxResult, max[i][a]);
                     a = parent[i][a];
                 }
                 diff >>= 1;
@@ -162,11 +155,14 @@ public class BOJ3176 {
         // 높이가 같은 경우
         if(a == b) return a;
 
-        for(int i = 17; i >= 0; i--)
+        for(int i = LogN; i >= 0; i--)
         {
 
-            // 부모가 달라지는 시점 == LCA의 바로 아래 노드
+            // 부모가 달라지는 시점으로 계속 이동하면 LCA의 바로 아래 노드로 이동
             if(parent[i][a] != parent[i][b]) {
+                // min, max 업데이트
+                minResult = Math.min( minResult, Math.min(min[i][a], min[i][b]));
+                maxResult = Math.max( maxResult, Math.max(max[i][a], max[i][b]));
                 a = parent[i][a];
                 b = parent[i][b];
             }
@@ -174,6 +170,9 @@ public class BOJ3176 {
         }
 
         // lca  == parent[0][a];
+
+        minResult = Math.min( minResult, Math.min(min[0][a], min[0][b]));
+        maxResult = Math.max( maxResult, Math.max(max[0][a], max[0][b]));
 
         return parent[0][a];
     }
