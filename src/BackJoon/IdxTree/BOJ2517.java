@@ -11,6 +11,7 @@ import java.util.Map;
 
 /*
  * 달리기
+ * 좌표 압축 + 인덱스 트리 사용
  */
 public class BOJ2517 {
 
@@ -22,7 +23,7 @@ public class BOJ2517 {
 
     public static void edit(int x, int v) {
         int tmp = firstLeaf + x - 1;
-        idx[tmp] += v;
+        idx[tmp] = v;
 
         while(tmp > 1) {
             tmp /= 2;
@@ -41,7 +42,7 @@ public class BOJ2517 {
         }
         else
         {
-            return sum(x * 2, l, (l+r)/2, find_l, find_r) + sum(2*x + 1 , (l+r)/2 + 1, r, find_l, find_r);
+            return sum(x * 2, l, (l+r)/2, find_l, find_r) + sum(x * 2 + 1 , (l+r)/2 + 1, r, find_l, find_r);
         }
     }
 
@@ -60,7 +61,7 @@ public class BOJ2517 {
 
         idx = new int[2*firstLeaf];
 
-        for(int i =1 ; i <= n; i++)
+        for(int i = 1; i <= n; i++)
         {
             data[i] = Integer.parseInt(br.readLine());
             tmp[i] = data[i];
@@ -76,8 +77,9 @@ public class BOJ2517 {
 
         for(int i =1; i <= n; i++) {
             int t= order.get(data[i]);
-            // 나보다 큰 구간의 합
-            bw.append(i - sum(1, 1, n, t+1, n) + "\n");
+
+            // 나보다 작은 구간의 합
+            bw.append(i - sum(1, 1, firstLeaf, 1, t-1) + "\n");
             edit(t, 1);
         }
 
