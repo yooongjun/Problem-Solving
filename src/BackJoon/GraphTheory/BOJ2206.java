@@ -46,6 +46,7 @@ public class BOJ2206 {
                         queue.add(new Info(xx, yy, 0, now.cost + 1));
                     }
 
+                    // 벽이 아닌 경우는 cnt값을 유지하며 큐에 추가한다.
                     if (map[xx][yy] == '0') {
                         visit[now.cnt][xx][yy] = true;
                         queue.add(new Info(xx, yy, now.cnt, now.cost + 1));
