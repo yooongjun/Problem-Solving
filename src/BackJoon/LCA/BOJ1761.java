@@ -78,8 +78,8 @@ public class BOJ1761 {
 
     static void makeSparse() {
 
-        for(int  i = 1 ; i <= tmp; i++) {
-            for(int j = 1; j < 100001; j++) {
+        for(int  i = 1 ; i <= 15; i++) {
+            for(int j = 1; j < 40001; j++) {
                 parent[i][j] = parent[i-1][parent[i-1][j]];
                 distance[i][j] = distance[i-1][j] + distance[i-1][parent[i-1][j]];
             }
@@ -130,7 +130,7 @@ public class BOJ1761 {
 
         int t = 1;
         tmp = 0;
-        while(t < 100000) {
+        while(t < 40000) {
             t *= 2;
             tmp ++;
         }
