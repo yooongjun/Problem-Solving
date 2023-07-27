@@ -1,4 +1,4 @@
-package groupStudy.group;
+package groupStudy.day01.implementation.group;
 
 import java.io.BufferedReader;
 import java.io.IOException;
