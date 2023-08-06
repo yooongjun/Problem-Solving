@@ -17,7 +17,6 @@ public class BOJ2217 {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         N = Integer.parseInt(bufferedReader.readLine());
 
-
         Integer[] ropes = new Integer[N];
 
         for (int i = 0; i < ropes.length; i++) {
@@ -33,11 +32,10 @@ public class BOJ2217 {
         for (int i = 0; i < ropes.length; i++) {
 
             // i번째 로프를 사용하는 경우 최대 무게
-            int curWeight = (i + 1) * ropes[i];
+            int weightUsingI = (i + 1) * ropes[i];
 
-            if( maxWeight >= curWeight ) break;
+            maxWeight = Math.max(maxWeight, weightUsingI);
 
-            maxWeight = curWeight;
         }
 
         System.out.println(maxWeight);
