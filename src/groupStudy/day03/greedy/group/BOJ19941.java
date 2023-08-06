@@ -1,6 +1,5 @@
 package groupStudy.day03.greedy.group;
 
-import java.awt.geom.RectangularShape;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -76,12 +75,12 @@ public class BOJ19941 {
     }
 
 
-    private static void insertPersonBurger(String s, ArrayList<Integer> peopleIndex, Queue<Integer> burgerIndex) {
+    private static void insertPersonBurger(String s, ArrayList<Integer> people, Queue<Integer> burgers) {
         for (int i = 0; i < s.length(); i++) {
 
-            if (s.charAt(i) == 'H') burgerIndex.add(i + 1);
+            if (s.charAt(i) == 'H') burgers.add(i + 1);
 
-            else peopleIndex.add(i + 1);
+            else people.add(i + 1);
 
         }
     }
