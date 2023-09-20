@@ -9,42 +9,45 @@ import java.util.Arrays;
 public class BOJ1535 {
 
     static int n;
-    static Person[] people;
+
+    static int price[];
+    static int value[];
 
     public static void main(String[] args) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         n = Integer.parseInt(bufferedReader.readLine());
-        people = new Person[n];
+
+        int dp[] = new int[100];
+        price = new int[n];
+        value = new int[n];
 
         String[] input_1 = bufferedReader.readLine().split(" ");
         String[] input_2 = bufferedReader.readLine().split(" ");
 
         for (int i = 0; i < n; i++) {
-            int price = Integer.parseInt(input_1[i]);
-            int value = Integer.parseInt(input_2[i]);
-            people[i] = new Person(price, value);
+            price[i] = Integer.parseInt(input_1[i]);
+            value[i] = Integer.parseInt(input_2[i]);
         }
 
-        // 내림차순 정렬
-        Arrays.sort(people, (p1, p2) -> p1.price - p2.price);
+
+        int max = 0;
 
 
-
-
-
-    }
-
-    static class Person{
-
-        int price;
-        int value;
-
-        public Person(int price, int value) {
-            this.price = price;
-            this.value = value;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j <= 99; j++) {
+                if (price[i] + j <= 99) {
+                    dp[j + price[i] ] = Math.max(dp[j + price[i]], value[i] + dp[j]);
+                }
+            }
         }
-    }
 
+
+        for (int i = 0; i < 100; i++) {
+            max = Math.max(max, dp[i]);
+        }
+
+        System.out.println(max);
+    }
 
 
 }
