@@ -56,6 +56,7 @@ public class BOJ15810 {
                 high = mid - 1;
             }
 
+
             if (count < m) {
                 low = mid + 1;
             }
