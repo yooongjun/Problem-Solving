@@ -15,7 +15,7 @@ public class BOJ6068 {
     static int N = 0;
     static List<Work> works = new ArrayList<>();
 
-    static int result = 1000000;
+    static int result = -1;
 
     public static void main(String[] args) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
@@ -45,7 +45,7 @@ public class BOJ6068 {
         while (l <= r) {
             int mid = (l + r) / 2;
 
-            if (isPossible(mid)) {
+            if (!isPossible(mid)) {
                 r = mid -1;
             }
             else {
@@ -67,7 +67,7 @@ public class BOJ6068 {
             }
         }
 
-        result = Math.min(result, wakeUpTime);
+        result = Math.max(result, wakeUpTime);
         return true;
     }
 
@@ -84,7 +84,7 @@ public class BOJ6068 {
 
         @Override
         public int compareTo(@NotNull Work o) {
-            return o.limit - this.limit;
+            return this.limit - o.limit;
         }
     }
 
