@@ -6,7 +6,7 @@ import java.util.PriorityQueue;
 public class LeetCode_743 {
 
     List<Edge> adjacentNodes[];
-    PriorityQueue<Edge> edges = new PriorityQueue<>((e1, e2) -> e1.weight - e2.weight);
+    PriorityQueue<Edge> edges = new PriorityQueue<>((e1, e2) -> e2.weight - e1.weight);
     static final int INF =  100000000;
     int distance[];
 
@@ -45,20 +45,17 @@ public class LeetCode_743 {
 
     void dijkstra(int start) {
 
+        edges.add(new Edge(start, start, 0));
         distance[start] = 0;
-        for (Edge next : adjacentNodes[start]) {
-            edges.add(new Edge(next.source, next.target, distance[next.source] + next.weight));
-            distance[next.source] = distance[start] + next.weight;
-        }
 
         while (!edges.isEmpty()) {
             Edge edge = edges.poll();
             System.out.printf("edge.. s: %d, d: %d, w: %d\n", edge.source, edge.target, edge.weight);
 
-            for (Edge next : adjacentNodes[edge.source]) {
-                if (distance[next.source] > distance[edge.source] + edge.weight) {
-                    distance[next.source] = distance[edge.source] + edge.weight;
-                    edges.add(new Edge(next.source, next.target, distance[next.source] + next.weight));
+            for (Edge next : adjacentNodes[edge.source]) { // next : {2,1,1}
+                if (distance[next.target] > distance[edge.source] + edge.weight) {
+                    distance[next.target] = distance[edge.source] + edge.weight;
+                    edges.add(new Edge(next.target, 0, next.weight + distance[next.target]));
                 }
             }
         }
@@ -73,6 +70,7 @@ public class LeetCode_743 {
         int weight;
 
         public Edge(int source, int target, int weight) {
+            this.source = source;
             this.target = target;
             this.weight = weight;
         }
