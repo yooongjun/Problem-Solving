@@ -3,6 +3,11 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.SQLOutput;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 // 힙 정렬
 
@@ -45,7 +50,7 @@ public class BOJ24173 {
     static int N;
     static int K;
     static int A[];
-
+    static List<Integer> arr = new ArrayList<>();
     public static void main(String[] args) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         String[] s = bufferedReader.readLine().split(" ");
@@ -62,9 +67,12 @@ public class BOJ24173 {
 
         heap_sort(A);
 
-        for (int i = 1; i <= N; i++) {
-            System.out.println(A[i]);
-        }
+        if (arr.size() >= 2) {
+            Collections.sort(arr);
+            for (int i = 0; i <= 1; i++) {
+                System.out.print(arr.get(i) + " ");
+            }
+        } else System.out.println(-1);
     }
 
     static void heap_sort(int A[]) {
@@ -75,7 +83,12 @@ public class BOJ24173 {
             int tmp = A[1];
             A[1] = A[i];
             A[i] = tmp;
-            heapify(A, 1, i-1);
+            K--;
+            if (K == 0) {
+                arr.add(A[1]);
+                arr.add(A[i]);
+            }
+            heapify(A, 1, i - 1);
         }
     }
 
@@ -103,11 +116,17 @@ public class BOJ24173 {
             return;
         }
 
-        // 노드 K의 값과 노드 smaller의 값을 비교해서 k가 더 크면 바꾼다!
-        if (A[smaller] < A[K]) {
-            int tmp = A[K];
+        //  최소 힙 성질을 만족하지 못하는 경우 재귀적으로 수정한다.
+        if (A[smaller] < A[k]) {
+            int tmp = A[k];
             A[k] = A[smaller];
             A[smaller] = tmp;
+            K--;
+            if (K == 0) {
+                arr.add(A[k]);
+                arr.add(A[smaller]);
+            }
+
             heapify(A, smaller, n);
         }
     }
