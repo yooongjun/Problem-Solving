@@ -23,7 +23,9 @@ public class BOJ17952 {
             int tmp = Integer.parseInt(s[0]);
 
             if (tmp == 0) {
-
+                if (currentTask == null && !remains.isEmpty()) {
+                    currentTask = remains.pop();
+                }
             }
             else if (tmp == 1)
             {
@@ -45,7 +47,7 @@ public class BOJ17952 {
             }
         }
 
-
+        System.out.println(totalScore);
     }
 
     static class Task{
